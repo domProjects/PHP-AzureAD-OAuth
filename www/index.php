@@ -57,7 +57,7 @@ else
 						<span class="navbar-toggler-icon"></span>
 					</button>
 <?php if ($error !== true): ?>
-					<a class="btn btn-primary" href="/?action=logout" role="button">Logout</a>
+					<a class="btn btn-primary" href="?action=logout" role="button">Logout</a>
 <?php endif ?>
 				</div>
 			</nav>
