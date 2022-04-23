@@ -6,7 +6,6 @@
  */
 
 //
-$oauth = false;
 $error = false;
 $errorMessage = null;
 $resultRole = null;
@@ -17,26 +16,31 @@ if (! file_exists('../inc/config.inc'))
 	$error = true;
     $errorMessage = 'The <strong>config.inc</strong> file does not exist.';
 }
-
-if (isset($_GET['action']) == 'login')
+else
 {
 	//
 	include '../inc/auth.php';
-	include '../inc/graph.php';
-
-	//
 	$auth = new modAuth();
-	$graph = new modGraph();
 
 	//
-	$photo = $graph->getPhoto();
-	$profile = $graph->getProfile();
+	$isLoggedIn = $auth->isLoggedIn;
 
-	$displayName = $profile->displayName;
-
-	foreach ($auth->userRoles as $role)
+	//
+	if ($isLoggedIn)
 	{
-		$resultRole .= '<li>' . $role . '</li>';
+		include '../inc/graph.php';
+		$graph = new modGraph();
+
+		//
+		$photo = $graph->getPhoto();
+		$profile = $graph->getProfile();
+
+		$displayName = $profile->displayName;
+
+		foreach ($auth->userRoles as $role)
+		{
+			$resultRole .= '<li>' . $role . '</li>';
+		}
 	}
 }
 
@@ -58,18 +62,20 @@ if (isset($_GET['action']) == 'login')
 					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
 					</button>
-<?php if ($oauth !== true): ?>
-					<a class="btn btn-primary" href="?action=login" role="button">Login</a>
+					<div>
+<?php if (! $isLoggedIn): ?>
+						<a class="btn btn-primary" href="?action=login" role="button">Login</a>
 <?php else: ?>
-					<a class="btn btn-primary" href="?action=logout" role="button">Logout</a>
+						<a class="btn btn-primary" href="?action=logout" role="button">Logout</a>
 <?php endif ?>
+					</div>
 				</div>
 			</nav>
 		</header>
 
 		<main class="flex-shrink-0">
 			<div class="container">
-<?php if ($oauth !== false): ?>
+
 				<h1><?= $displayName ?></h1>
 
 				<?= $photo ?>
@@ -81,12 +87,11 @@ if (isset($_GET['action']) == 'login')
 
 				<h2>Profile Graph API output:</h2>
 				<pre><?= print_r($profile) ?></pre>
-<?php elseif ($error !== false): ?>
+
+<?php if ($error): ?>
 				<div class="alert alert-danger" role="alert">
 					<?= $errorMessage ?>
 				</div>
-<?php else: ?>
-
 <?php endif ?>
 			</div>
 		</main>
