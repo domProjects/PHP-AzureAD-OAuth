@@ -6,6 +6,7 @@
  */
 
 //
+$oauth = false;
 $error = false;
 $errorMessage = null;
 $resultRole = null;
@@ -16,7 +17,8 @@ if (! file_exists('../inc/config.inc'))
 	$error = true;
     $errorMessage = 'The <strong>config.inc</strong> file does not exist.';
 }
-else
+
+if (isset($_GET['action']) == 'login')
 {
 	//
 	include '../inc/auth.php';
@@ -40,7 +42,7 @@ else
 
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,7 +50,7 @@ else
 		<link rel="stylesheet" href="style.css">
 		<title>PHP Azure AD OAuth 2.0</title>
 	</head>
-	<body>
+	<body class="d-flex flex-column h-100">
 		<header>
 			<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 				<div class="container-fluid">
@@ -56,7 +58,9 @@ else
 					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
 					</button>
-<?php if ($error !== true): ?>
+<?php if ($oauth !== true): ?>
+					<a class="btn btn-primary" href="?action=login" role="button">Login</a>
+<?php else: ?>
 					<a class="btn btn-primary" href="?action=logout" role="button">Logout</a>
 <?php endif ?>
 				</div>
@@ -65,7 +69,7 @@ else
 
 		<main class="flex-shrink-0">
 			<div class="container">
-<?php if ($error !== true): ?>
+<?php if ($oauth !== false): ?>
 				<h1><?= $displayName ?></h1>
 
 				<?= $photo ?>
@@ -77,17 +81,19 @@ else
 
 				<h2>Profile Graph API output:</h2>
 				<pre><?= print_r($profile) ?></pre>
-<?php else: ?>
+<?php elseif ($error !== false): ?>
 				<div class="alert alert-danger" role="alert">
 					<?= $errorMessage ?>
 				</div>
+<?php else: ?>
+
 <?php endif ?>
 			</div>
 		</main>
 
 		<footer class="footer mt-auto py-3 bg-light">
 			<div class="container">
-				<span class="text-muted">Place sticky footer content here.</span>
+				<span class="text-muted">2021-<?= date('Y') ?> | <a href="https://github.com/CoasterKaty" target="_blank">CoasterKaty</a> & <a href="https://github.com/domProjects" target="_blank">domProjects</a></span>
 			</div>
 		</footer>		
 
