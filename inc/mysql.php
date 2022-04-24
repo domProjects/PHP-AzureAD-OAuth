@@ -9,24 +9,31 @@ require_once dirname(__FILE__) . '/config.inc';
 
 class modDB
 {
-	var $myDB;
+	protected $connectDb;
 
 	public function __construct()
 	{
-		global $mainDB;
+		error_reporting(0);
+		mysqli_report(MYSQLI_REPORT_OFF);
 
-		if ($mainDB == null)
+		$mysqli = mysqli_connect(_MYSQL_HOST, _MYSQL_USER, _MYSQL_PASS, _MYSQL_DB);
+
+		if ($mysqli->connect_errno)
 		{
-			if (defined('_MYSQL_HOST') && defined('_MYSQL_USER') && defined('_MYSQL_DB'))
-			{
-				$mainDB = @mysqli_connect(_MYSQL_HOST, _MYSQL_USER, _MYSQL_PASS, _MYSQL_DB) or die('Fatal Error - Unable to connect to the database server. Please try again later');
-			}
+			throw new RuntimeException('mysqli connection error: ' . $mysqli->connect_error);
 		}
 
-		$this->myDB = $mainDB;
+		mysqli_set_charset($mysqli, 'utf8mb4');
+
+		if ($mysqli->errno)
+		{
+			throw new RuntimeException('mysqli error: ' . $mysqli->error);
+		}
+
+		$this->connectDb = $mysqli;
 	}
 
-	public function QueryArray($strQuery)
+	public function QueryArray($strQuery): array
 	{
 		//Perform query and return result set as array
 		$query = $this->Query($strQuery);
@@ -56,7 +63,7 @@ class modDB
 
 	public function Query($strQuery)
 	{
-		return mysqli_query($this->myDB, $strQuery);
+		return mysqli_query($this->connectDb, $strQuery);
 	}
 
 	public function Delete($table, $conditionArray)
@@ -67,11 +74,11 @@ class modDB
 		foreach ($conditionArray as $fieldName => $fieldValue)
 		{
 			if ($intCount > 0) $query .= ' AND ';
-				$query .= '`' . $fieldName . '` = \'' . mysqli_real_escape_string($this->myDB, $fieldValue) . '\'';
+				$query .= '`' . $fieldName . '` = \'' . mysqli_real_escape_string($this->connectDb, $fieldValue) . '\'';
 				$intCount++;
 		}
 
-		return mysqli_query($this->myDB, $query);
+		return mysqli_query($this->connectDb, $query);
 	}
 
 	public function Insert($table, $fieldArray)
@@ -104,11 +111,11 @@ class modDB
 
 			if (substr($fieldName, 0, 1) == '!')
 			{
-				$query .= mysqli_real_escape_string($this->myDB, $fieldValue);
+				$query .= mysqli_real_escape_string($this->connectDb, $fieldValue);
 			}
 			else
 			{
-				$query .= '\'' . mysqli_real_escape_string($this->myDB, $fieldValue) . '\'';
+				$query .= '\'' . mysqli_real_escape_string($this->connectDb, $fieldValue) . '\'';
 			}
 
 			$intCount++;
@@ -116,8 +123,8 @@ class modDB
 
 		$query .= ')';
 
-		$myQry = mysqli_query($this->myDB, $query);
-		return mysqli_insert_id($this->myDB);
+		$myQry = mysqli_query($this->connectDb, $query);
+		return mysqli_insert_id($this->connectDb);
 	}
 
 	public function Update($table, $fieldArray, $conditionArray)
@@ -131,11 +138,11 @@ class modDB
 
 			if (substr($fieldName, 0, 1) == '!')
 			{
-				$query .= '`' . substr($fieldName, 1) . '`=' . mysqli_real_escape_string($this->myDB, $fieldValue);
+				$query .= '`' . substr($fieldName, 1) . '`=' . mysqli_real_escape_string($this->connectDb, $fieldValue);
 			}
 			else
 			{
-				$query .= '`' . $fieldName . '`=\'' . mysqli_real_escape_string($this->myDB, $fieldValue) . '\'';
+				$query .= '`' . $fieldName . '`=\'' . mysqli_real_escape_string($this->connectDb, $fieldValue) . '\'';
 			}
 
 			$intCount++;
@@ -147,11 +154,11 @@ class modDB
 		foreach ($conditionArray as $fieldName => $fieldValue)
 		{
 			if ($intCount > 0) $query .= ' AND ';
-			$query .= '`' . $fieldName . '` = \'' . mysqli_real_escape_string($this->myDB, $fieldValue) . '\'';
+			$query .= '`' . $fieldName . '` = \'' . mysqli_real_escape_string($this->connectDb, $fieldValue) . '\'';
 			$intCount++;
 		}
 
-		return mysqli_query($this->myDB, $query);
+		return mysqli_query($this->connectDb, $query);
 	}
 
 	public function Count($query)
@@ -164,12 +171,12 @@ class modDB
 
 	public function Escape($string)
 	{
-		return mysqli_real_escape_string($this->myDB, $string);
+		return mysqli_real_escape_string($this->connectDb, $string);
 	}
 
 	public function Error()
 	{
-		return mysqli_error($this->myDB);
+		return mysqli_error($this->connectDb);
 	}
 }
 
