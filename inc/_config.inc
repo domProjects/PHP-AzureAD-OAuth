@@ -1,22 +1,16 @@
 <?php
-/* config.inc Configuration for oAuth Demo project
+/**
+ * 
+ * Original project: Katy Nicholson - https://github.com/CoasterKaty
  *
- * Katy Nicholson, last updated 17/11/2021
- *
- * https://github.com/CoasterKaty
- * https://katytech.blog/
- * https://twitter.com/coaster_katy
- *
- 
+ */
 
-***RENAME TO config.inc ***
-
-*/
 // MySQL connection details
 define('_MYSQL_HOST', 'localhost');
 define('_MYSQL_USER', 'oauthdemo');
 define('_MYSQL_DB', 'oauthdemo');
 define('_MYSQL_PASS', 'DATABASE_PASSWORD');
+define('_MYSQL_CHARSET', 'utf8mb4');
 
 
 // oAuth details
@@ -46,5 +40,5 @@ define('_OAUTH_AUTH_KEYFILE', '/path/to/privatekey.pem');
 
 // URL to this website, no trailing slash.
 define('_URL', 'https://oauthdemo.domain');
-?>
 
+?>

@@ -9,8 +9,18 @@ require_once dirname(__FILE__) . '/config.inc';
 
 class modDB
 {
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	protected $connectDb;
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function __construct()
 	{
 		error_reporting(0);
@@ -23,7 +33,7 @@ class modDB
 			throw new RuntimeException('mysqli connection error: ' . $mysqli->connect_error);
 		}
 
-		mysqli_set_charset($mysqli, 'utf8mb4');
+		mysqli_set_charset($mysqli, _MYSQL_CHARSET);
 
 		if ($mysqli->errno)
 		{
@@ -33,9 +43,13 @@ class modDB
 		$this->connectDb = $mysqli;
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return array
+	 */
 	public function QueryArray($strQuery): array
 	{
-		//Perform query and return result set as array
 		$query = $this->Query($strQuery);
 
 		while ($myRow = $this->Fetch($query))
@@ -46,6 +60,11 @@ class modDB
 		return $ret;
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function QuerySingle($strQuery)
 	{
 		$query = $this->Query($strQuery);
@@ -56,16 +75,31 @@ class modDB
 		}
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Fetch(&$mysqlQuery)
 	{
 		return mysqli_fetch_array($mysqlQuery, MYSQLI_ASSOC);
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Query($strQuery)
 	{
 		return mysqli_query($this->connectDb, $strQuery);
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Delete($table, $conditionArray)
 	{
 		$query = 'DELETE FROM `' . $table . '` WHERE';
@@ -81,6 +115,11 @@ class modDB
 		return mysqli_query($this->connectDb, $query);
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Insert($table, $fieldArray)
 	{
 		$query = 'INSERT INTO `' . $table . '` (';
@@ -127,6 +166,11 @@ class modDB
 		return mysqli_insert_id($this->connectDb);
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Update($table, $fieldArray, $conditionArray)
 	{
 		$query = 'UPDATE `' . $table . '` SET ';
@@ -161,6 +205,11 @@ class modDB
 		return mysqli_query($this->connectDb, $query);
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Count($query)
 	{
 		$query = 'SELECT COUNT(*) as cnt FROM (' . $query . ') as tDerivedCount';
@@ -169,11 +218,21 @@ class modDB
 		return (! empty($count['cnt']) ? $count['cnt'] : 0);
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Escape($string)
 	{
 		return mysqli_real_escape_string($this->connectDb, $string);
 	}
 
+	/**
+	 * xxxxx xxxxx xxxxx
+	 *
+	 * @return xxxxx
+	 */
 	public function Error()
 	{
 		return mysqli_error($this->connectDb);
